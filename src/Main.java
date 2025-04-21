@@ -14,30 +14,30 @@ public class Main {
             solver.initPositionLookup(unsolvable2d);
             solver.getCurrentGrid1DLookup();
 
-            //print - both for puzzle and lookup
-            System.out.println("Print whole puzzle");
-            System.out.println("Solvable Puzzle");
-            Helper.print(solvable2d);
-
-            System.out.println("Unsolvable Puzzle");
-            Helper.print(unsolvable2d);
-
-            //lookup position in 1d
-            //array index is number in puzzle
-            //array value is the location of the number in puzzle
-            System.out.println("Lookup position in 1d");
-            int[] lookup = solver.getCurrentGrid1DLookup();
-            Helper.printWithIndex(lookup);
-
-            //retrieve lookup index for O(1) instead of traversing every time - both for puzzle and lookup access
-            System.out.println("Get index of empty cell 0");
-            System.out.println(solver.getLookupIndex(0));
-
-            //get number with index access on the puzzle(not the lookup)
-            // input is the location on the puzzle(not the lookup), return the value
-            System.out.println("Get value at index");
-            System.out.println(Helper.getValue(SolveablePuzzle.solvable1D_1, 15));
-            System.out.println(Helper.getValue(unsolvable2d, 3, 3));
+//            //print - both for puzzle and lookup
+//            System.out.println("Print whole puzzle");
+//            System.out.println("Solvable Puzzle");
+//            Helper.print(solvable2d);
+//
+//            System.out.println("Unsolvable Puzzle");
+//            Helper.print(unsolvable2d);
+//
+//            //lookup position in 1d
+//            //array index is number in puzzle
+//            //array value is the location of the number in puzzle
+//            System.out.println("Lookup position in 1d");
+//            int[] lookup = solver.getCurrentGrid1DLookup();
+//            Helper.printWithIndex(lookup);
+//
+//            //retrieve lookup index for O(1) instead of traversing every time - both for puzzle and lookup access
+//            System.out.println("Get index of empty cell 0");
+//            System.out.println(solver.getLookupIndex(0));
+//
+//            //get number with index access on the puzzle(not the lookup)
+//            // input is the location on the puzzle(not the lookup), return the value
+//            System.out.println("Get value at index");
+//            System.out.println(Helper.getValue(SolveablePuzzle.solvable1D_1, 15));
+//            System.out.println(Helper.getValue(unsolvable2d, 3, 3));
 
 
             System.out.println("Before move");
@@ -46,6 +46,8 @@ public class Main {
             System.out.println("After move");
             Helper.print(solver.getCurrentGrid2D());
 
+
+            System.out.println(solver.isValid(Helper.to2DArray(SolveablePuzzle.solvable1D_1)));
 
             Helper.isComplete(solvable2d, solver.getCurrentGrid2D());
 

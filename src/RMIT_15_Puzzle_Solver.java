@@ -224,7 +224,6 @@ public class RMIT_15_Puzzle_Solver {
 
     // #region grid validation methods - WIP
     public boolean isSolvable(int[][] grid) {
-
         return false;
     }
 

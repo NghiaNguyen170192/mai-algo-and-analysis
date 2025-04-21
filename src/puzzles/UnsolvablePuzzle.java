@@ -12,4 +12,12 @@ public final class UnsolvablePuzzle {
 
     // Blank space in the wrong row for solvability
     public static int[] unsolvable1D_4 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0, 15};
+
+
+
+
+
+
+    // dup puzzle
+    public static int[] duplicate1D_1 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 0};
 }
