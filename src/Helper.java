@@ -27,7 +27,7 @@ public class Helper {
     }
 
     //O(N*N)
-    public boolean isComplete(int[][] givenPuzzle2D, int[][] currentGrid2D) {
+    public static boolean isComplete(int[][] givenPuzzle2D, int[][] currentGrid2D) {
         for (int rowIndex = 0; rowIndex < givenPuzzle2D.length; rowIndex++) {
             for (int columnIndex = 0; columnIndex < givenPuzzle2D[0].length; columnIndex++) {
                 if (currentGrid2D[rowIndex][columnIndex] != givenPuzzle2D[rowIndex][columnIndex]) {

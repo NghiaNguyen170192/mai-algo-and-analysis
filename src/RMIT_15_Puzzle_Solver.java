@@ -10,7 +10,7 @@ public class RMIT_15_Puzzle_Solver {
     private int[][] currentGrid2D;
     private int[] currentGrid1DLookup;
     private boolean isSolvable = false;
-    //    private int currentBlankSpaceIndex = 0;
+    //    private int currentEmptyIndex = 0;
     private int currentEmptyRow = 0;
     private int currentEmptyColumn = 0;
 
@@ -49,7 +49,6 @@ public class RMIT_15_Puzzle_Solver {
         currentEmptyColumn = columnCount - 1;
     }
 
-
     // O(N*N)
     public int[][] initDefault2D() {
         int[][] default2D = new int[rowCount][columnCount];
@@ -64,17 +63,7 @@ public class RMIT_15_Puzzle_Solver {
         return default2D;
     }
 
-    // #region grid validation methods
-    public boolean isSolvable(int[][] grid) {
-
-        return false;
-    }
-
-    public boolean getIsSolvable() {
-        return isSolvable;
-    }
-
-    // O(N*N)
+    // O(N*N) - WIP
     public boolean isValid(int[][] puzzle) {
         if (puzzle == null || puzzle.length == 0 || puzzle[0].length == 0) {
             return false;
@@ -107,7 +96,6 @@ public class RMIT_15_Puzzle_Solver {
 
         return true;
     }
-
 
     //WIP
 //    public int findEmptyRow() {
@@ -168,17 +156,19 @@ public class RMIT_15_Puzzle_Solver {
             isValidMove = true;
         }
 
-        if (isValidMove) {
-            int numberToMove = currentGrid2D[fromRow][fromColumn];
-            currentGrid2D[fromRow][fromColumn] = currentGrid2D[toRow][toColumn];
-            currentGrid2D[toRow][toColumn] = numberToMove;
-
-            //update empty cell new position index
-            currentGrid1DLookup[0] = Helper.to1DIndex(fromRow, fromColumn, columnCount);
-            //update number to new position index
-            currentGrid1DLookup[numberToMove] = Helper.to1DIndex(toRow, toColumn, columnCount);
-            moveCount++;
+        if (!isValidMove) {
+            throw new Exception("Invalid move");
         }
+
+        int numberToMove = currentGrid2D[fromRow][fromColumn];
+        currentGrid2D[fromRow][fromColumn] = currentGrid2D[toRow][toColumn];
+        currentGrid2D[toRow][toColumn] = numberToMove;
+
+        //update empty cell new position index
+        currentGrid1DLookup[0] = Helper.to1DIndex(fromRow, fromColumn, columnCount);
+        //update number to new position index
+        currentGrid1DLookup[numberToMove] = Helper.to1DIndex(toRow, toColumn, columnCount);
+        moveCount++;
 
         if (isMoveUp) {
             return "U";
@@ -200,26 +190,12 @@ public class RMIT_15_Puzzle_Solver {
         return "";
     }
 
-    public int getMoveCount() {
-        return moveCount;
-    }
-
-    public String getMoves() {
-        return movesBuilder.toString();
-    }
-
-    //if
     public int[] getMovablePositions() {
         int[] movablePositions = new int[4]; // Array to store possible movable positions
         int count = 0; // Counter for valid movable positions
-        movablePositions[0] = -1;
-        movablePositions[1] = -1;
-        movablePositions[2] = -1;
-        movablePositions[3] = -1;
 
         // Check position above the blank space
         if (currentEmptyRow > 0) { // Ensure it's not at the top edge
-
             movablePositions[count++] = Helper.to1DIndex(currentEmptyRow - 1, currentEmptyColumn, columnCount);
         }
 
@@ -238,9 +214,21 @@ public class RMIT_15_Puzzle_Solver {
             movablePositions[count++] = Helper.to1DIndex(currentEmptyRow, currentEmptyColumn + 1, columnCount);
         }
 
-        return movablePositions;
+        int[] validMovablePositions = new int[count];
+        for (int i = 0; i < count; i++) {
+            validMovablePositions[i] = movablePositions[i];
+        }
+
+        return validMovablePositions;
     }
 
+    // #region grid validation methods - WIP
+    public boolean isSolvable(int[][] grid) {
+
+        return false;
+    }
+
+    // Getters - Setters
     public int[][] getCurrentGrid2D() {
         return currentGrid2D;
     }
@@ -249,52 +237,15 @@ public class RMIT_15_Puzzle_Solver {
         return currentGrid1DLookup;
     }
 
-    // #endregion
-    public static void main(String[] args) {
-        RMIT_15_Puzzle_Solver solver = new RMIT_15_Puzzle_Solver();
-        int[][] solvable2d = Helper.to2DArray(SolveablePuzzle.solvable1D_1);
-        int[][] unsolvable2d = Helper.to2DArray(UnsolvablePuzzle.unsolvable1D_1);
+    public int getMoveCount() {
+        return moveCount;
+    }
 
-        try {
-            solver.solve(solvable2d);
+    public String getMoves() {
+        return movesBuilder.toString();
+    }
 
-            //convert from 2d to 1d and vice versa
-            solver.initPositionLookup(unsolvable2d);
-            solver.getCurrentGrid1DLookup();
-
-            //print - both for puzzle and lookup
-            System.out.println("Print whole puzzle");
-            System.out.println("Solvable Puzzle");
-            Helper.print(solvable2d);
-
-            System.out.println("Unsolvable Puzzle");
-            Helper.print(unsolvable2d);
-
-            //lookup position in 1d
-            //array index is number in puzzle
-            //array value is the location of the number in puzzle
-            System.out.println("Lookup position in 1d");
-            int[] lookup = solver.getCurrentGrid1DLookup();
-            Helper.printWithIndex(lookup);
-
-            //retrieve lookup index for O(1) instead of traversing every time - both for puzzle and lookup access
-            System.out.println("Get index of empty cell 0");
-            System.out.println(solver.getLookupIndex(0));
-
-            //get number with index access on the puzzle(not the lookup)
-            // input is the location on the puzzle(not the lookup), return the value
-            System.out.println("Get value at index");
-            System.out.println(Helper.getValue(SolveablePuzzle.solvable1D_1, 15));
-            System.out.println(Helper.getValue(unsolvable2d, 3, 3));
-
-
-            System.out.println("Before move");
-            Helper.print(solver.getCurrentGrid2D());
-            System.out.println(solver.move(3, 3, 3, 2));
-            System.out.println("After move");
-            Helper.print(solver.getCurrentGrid2D());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public boolean getIsSolvable() {
+        return isSolvable;
     }
 }
