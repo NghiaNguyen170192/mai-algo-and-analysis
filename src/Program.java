@@ -1,7 +1,7 @@
 import puzzles.SolveablePuzzle;
 import puzzles.UnsolvablePuzzle;
 
-public class Main {
+public class Program {
     public static void main(String[] args) {
         RMIT_15_Puzzle_Solver solver = new RMIT_15_Puzzle_Solver();
         int[][] solvable2d = Helper.to2DArray(SolveablePuzzle.solvable1D_1);
@@ -49,7 +49,7 @@ public class Main {
 
             System.out.println(solver.isValid(Helper.to2DArray(SolveablePuzzle.solvable1D_1)));
 
-            Helper.isComplete(solvable2d, solver.getCurrentGrid2D());
+//            Helper.isComplete(solvable2d, Helper.getGoal());
 
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -6,11 +6,12 @@ public class RMIT_15_Puzzle_Solver {
     private int rowCount;
     private int columnCount;
 
-    private int[][] givenPuzzle2D;
+    private int[][] goal2D;
+    private int[] goal1D;
     private int[][] currentGrid2D;
+    private int[] currentGrid1D;
     private int[] currentGrid1DLookup;
     private boolean isSolvable = false;
-    //    private int currentEmptyIndex = 0;
     private int currentEmptyRow = 0;
     private int currentEmptyColumn = 0;
 
@@ -38,10 +39,12 @@ public class RMIT_15_Puzzle_Solver {
         rowCount = puzzle.length;
         columnCount = puzzle[0].length;
         gridSize = puzzle.length * puzzle[0].length;
-        int[] puzzle1D = Helper.to1DGrid(puzzle);
 
-        givenPuzzle2D = puzzle;
-        currentGrid2D = initDefault2D();
+//        goal2D = initDefault2D();
+//        goal1D = Helper.to1DGrid(goal2D);
+//        currentGrid2D = puzzle;
+//        currentGrid1D = Helper.to1DGrid(currentGrid2D);
+
         currentGrid1DLookup = initPositionLookup(currentGrid2D);
 
         //default location of
@@ -96,12 +99,6 @@ public class RMIT_15_Puzzle_Solver {
 
         return true;
     }
-
-    //WIP
-//    public int findEmptyRow() {
-//        int emptyIndex = getLookupIndex(0);
-//        return (emptyIndex / gridSize) + 1; // Convert to row index from bottom
-//    }
 
     //O(N*N)
     public int[] initPositionLookup(int[][] grid) {
@@ -220,6 +217,17 @@ public class RMIT_15_Puzzle_Solver {
         }
 
         return validMovablePositions;
+    }
+
+    //O(N)
+    public boolean isComplete() {
+        for (int i = 0; i < goal1D.length; i++) {
+            if (goal1D[i] != currentGrid1D[i]) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // #region grid validation methods - WIP
