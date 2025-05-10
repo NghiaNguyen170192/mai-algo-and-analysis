@@ -8,12 +8,11 @@ public class ida_star {
     private static final char[] moveChar = {'U', 'D', 'L', 'R'};
 
     private int[][] board = new int[N][N];
-    private int[] board1d = new int[N * N];
-    private int[] boardLookup = new int[N * N];
-
     private int threshold;
     private String solution;
     private StringBuilder path;
+    private int currentBlankRow = 0;
+    private int currentBlankColumn = 0;
 
     public String solve(int[][] puzzle) {
         // Copy input
@@ -25,34 +24,33 @@ public class ida_star {
         threshold = manhattan(board);
         path = new StringBuilder();
         solution = null;
-        boardLookup = initLookup(board);
-        board1d = to1D(board);
+
+        // locate blank (0)
+        outer:
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (board[i][j] == 0) {
+                    currentBlankRow = i;
+                    currentBlankColumn = j;
+                    break outer;
+                }
+            }
+        }
 
         // Iterative deepening A*
         while (true) {
-            int blankR = 0, blankC = 0;
-            // locate blank (0)
-            outer:
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (board[i][j] == 0) {
-                        blankR = i;
-                        blankC = j;
-                        break outer;
-                    }
-                }
-            }
-
-            int t = dfs(blankR, blankC, 0, -1);
+            int t = dfs(currentBlankRow, currentBlankColumn, 0, -1);
             if (solution != null) {
                 if (solution.length() > MAX_MOVES) {
                     throw new RuntimeException("Solution exceeds maximum allowed moves");
                 }
                 return solution;
             }
+
             if (t == Integer.MAX_VALUE) {
                 throw new RuntimeException("Unsolvable puzzle");
             }
+
             threshold = t;
         }
     }
@@ -71,10 +69,12 @@ public class ida_star {
         if (f > threshold) {
             return f;
         }
+
         if (isGoal()) {
             solution = path.toString();
             return -1;
         }
+
         int min = Integer.MAX_VALUE;
         for (int direction = 0; direction < N; direction++) {
             // skip reverse move
@@ -82,9 +82,9 @@ public class ida_star {
             int newRow = blankRow + dx[direction], newColumn = blankColumn + dy[direction];
 
             if (newRow < 0 || newRow >= N || newColumn < 0 || newColumn >= N) continue;
+
             // Swap blank and tile
-            board[blankRow][blankColumn] = board[newRow][newColumn];
-            board[newRow][newColumn] = 0;
+            swap(blankRow, blankColumn, newRow, newColumn);
             path.append(moveChar[direction]);
 
             int t = dfs(newRow, newColumn, cost + 1, direction);
@@ -93,15 +93,24 @@ public class ida_star {
             if (t == -1) {
                 return -1;
             }
+
             if (t < min) {
                 min = t;
             }
+
             // backtrack
             path.setLength(path.length() - 1);
-            board[newRow][newColumn] = board[blankRow][blankColumn];
-            board[blankRow][blankColumn] = 0;
+            swap(newRow, newColumn, blankRow, blankColumn);
         }
+
         return min;
+    }
+
+    private void swap(int sourceRow, int sourceColumn, int destinationRow, int destinationColumn) {
+        board[sourceRow][sourceColumn] = board[destinationRow][destinationColumn];
+        board[destinationRow][destinationColumn] = 0;
+        currentBlankRow = destinationRow;
+        currentBlankColumn = destinationColumn;
     }
 
     /**
@@ -111,15 +120,14 @@ public class ida_star {
         int distance = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                int val = grid[i][j];
-                if (val != 0) {
-                    int targetRow = (val - 1) / N;
-                    int targetColumn = (val - 1) % N;
+                int value = grid[i][j];
+                if (value != 0) {
+                    int targetRow = (value - 1) / N;
+                    int targetColumn = (value - 1) % N;
                     distance += Math.abs(i - targetRow) + Math.abs(j - targetColumn);
                 }
             }
         }
-
 
         return distance;
     }
@@ -130,69 +138,20 @@ public class ida_star {
     private boolean isGoal() {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
+                // i * N + j is the position,
+                // i * N + j  + 1 is the expected number in that position,
                 int expected = i * N + j + 1;
                 if (expected == N * N) {
                     expected = 0;
                 }
-                if (board[i][j] != expected) return false;
+
+                if (board[i][j] != expected) {
+                    return false;
+                }
             }
         }
 
         return true;
-    }
-
-    private int[] to1D(int[][] board) {
-        if (board == null || board.length == 0) {
-            return new int[0];
-        }
-
-        int[] array = new int[N * N];
-        int index = 0;
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                array[index] = board[i][j];
-                index++;
-            }
-        }
-
-        return array;
-    }
-
-    //O(N*N)
-    public int[] initLookup(int[][] grid) {
-        int[] lookupArray = new int[N * N];
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                //lookupArray[0] presents empty cell
-                //lookupArray value presents index location
-                lookupArray[grid[i][j]] = to1DIndex(i, j);
-            }
-        }
-
-        return lookupArray;
-    }
-
-    // Get the index where a specific tile number is located
-    //this is a lookup table to return quick location of a number
-    //O(1)
-    private int getLookupIndex(int number) {
-        return boardLookup[number]; // Direct lookup for tile position
-    }
-
-    private int to1DIndex(int rowIndex, int columnIndex) {
-        return rowIndex * N + columnIndex;
-    }
-
-    //O(1)
-    private int[] to2DIndex(int index) {
-        return new int[]{index / N, index % N};
-    }
-
-    //O(N*N)
-    public void printBoard() {
-        printBoard(board);
     }
 
     //O(N*N)
@@ -205,6 +164,9 @@ public class ida_star {
         }
     }
 
+    public void printBoard() {
+        printBoard(board);
+    }
 
     // Optional main for quick testing
     public static void main(String[] args) {
