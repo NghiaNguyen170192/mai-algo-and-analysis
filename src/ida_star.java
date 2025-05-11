@@ -26,16 +26,7 @@ public class ida_star {
         solution = null;
 
         // locate blank (0)
-        outer:
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (board[i][j] == 0) {
-                    currentBlankRow = i;
-                    currentBlankColumn = j;
-                    break outer;
-                }
-            }
-        }
+        getBlankPosition(board);
 
         // Iterative deepening A*
         while (true) {
@@ -120,16 +111,20 @@ public class ida_star {
         int distance = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                int value = grid[i][j];
-                if (value != 0) {
-                    int targetRow = (value - 1) / N;
-                    int targetColumn = (value - 1) % N;
-                    distance += Math.abs(i - targetRow) + Math.abs(j - targetColumn);
+                int tile = grid[i][j];
+                if (tile != 0) {
+                    distance += calculateManhattan(i, j, tile);
                 }
             }
         }
 
         return distance;
+    }
+
+    private int calculateManhattan(int row, int column, int tile) {
+        int targetRow = (tile - 1) / N;
+        int targetColumn = (tile - 1) % N;
+        return Math.abs(row - targetRow) + Math.abs(column - targetColumn);
     }
 
     /**
@@ -152,6 +147,31 @@ public class ida_star {
         }
 
         return true;
+    }
+
+    //avoid calculation i*N+j+1
+    private boolean isGoalV2() {
+        int expected = 1;
+
+        for (int i = 0; i < N * N - 1; i++) {
+            if (board[i / N][i % N] != expected++) {
+                return false;
+            }
+        }
+
+        return board[N - 1][N - 1] == 0; // Ensure the last tile is blank (0)
+    }
+
+    private void getBlankPosition(int[][] grid) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (grid[i][j] == 0) {
+                    currentBlankRow = i;
+                    currentBlankColumn = j;
+                    return;
+                }
+            }
+        }
     }
 
     //O(N*N)
