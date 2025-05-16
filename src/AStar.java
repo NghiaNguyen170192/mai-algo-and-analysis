@@ -15,8 +15,8 @@ public class AStar {
         blankRow = blankPosition[0];
         blankColumn = blankPosition[1];
 
-        MinHeap open = new MinHeap(MAX_MOVES);
-        HashSet closed = new HashSet(MAX_MOVES);
+        MinHeap open = new MinHeap(10);
+        HashSet closed = new HashSet(10);
 
         Node start = new Node(board, blankRow, blankColumn, "", 0, -1);
         open.insert(start);
@@ -27,10 +27,6 @@ public class AStar {
 
                 if (Helper.isGoalV2(current.board)) {
                     board = Helper.testSolution(board, current.path);
-
-                    //gracefully null big size object
-                    open = null;
-                    closed = null;
                     return current.path;
                 }
 

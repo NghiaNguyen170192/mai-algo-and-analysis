@@ -223,7 +223,7 @@ public class Helper {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 sb.append(board[i][j]);
-                if (i != N - 1 || j != N - 1) sb.append(',');
+                sb.append(',');
             }
         }
         return sb.toString();

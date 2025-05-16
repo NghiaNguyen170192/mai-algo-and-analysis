@@ -23,7 +23,6 @@ public class MinHeap {
         heap = newHeap;
     }
 
-
     public Node remove() {
         Node top = heap[0];
         heap[0] = heap[--size];
